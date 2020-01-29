@@ -50,6 +50,9 @@ func (light *light) SetState(state lucifer.LightState) error {
 	newState.Hue = h16
 
 	s8 := uint8(s * 254)
+	if s8 == 0 {
+		s8 = 1
+	}
 	if s8 != ghState.Saturation {
 		changed = true
 	}

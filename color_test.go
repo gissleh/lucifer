@@ -14,6 +14,7 @@ func TestColor_FromString(t *testing.T) {
 		e bool
 	}{
 		"#FF00FF":                {r: "ff00ff"},
+		"#FFFFFF":                {r: "ffffff"},
 		"#00ff00":                {r: "00ff00"},
 		"00FF00":                 {r: "00ff00"},
 		"#deaded":                {r: "deaded"},
@@ -82,6 +83,7 @@ func TestColor_HSV(t *testing.T) {
 		h, s, v float64
 	}{
 		"#ff0000": {h: 0, s: 1, v: 1},
+		"#FFFFFF": {h: 0, s: 0, v: 1},
 		"#000000": {h: 0, s: 0, v: 0},
 		"#ffcc11": {h: 47, s: 0.933, v: 1},
 		"#11ffcc": {h: 167, s: 0.933, v: 1},
@@ -108,6 +110,7 @@ func TestColor_SetHSV(t *testing.T) {
 	}{
 		{h: 0, s: 1, v: 1},
 		{h: 0, s: 0, v: 0},
+		{h: 0, s: 0, v: 1},
 		{h: 47, s: 0.933, v: 1},
 		{h: 167, s: 0.933, v: 1},
 		{h: 210, s: 0.285, v: 0.937},
