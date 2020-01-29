@@ -83,6 +83,24 @@ func (driver *driver) AddBridge(ctx context.Context, ip, key string) (lucifer.Br
 	return bridge, nil
 }
 
+func (driver *driver) RemoveBridge(ctx context.Context, id string) error {
+	bridge := driver.Bridge(id)
+	if bridge == nil {
+		return lucifer.ErrBridgeNotFound
+	}
+
+	driver.mutex.Lock()
+	for i := range driver.bridgeList {
+		if driver.bridgeList[i] == bridge {
+			driver.bridgeList = append(driver.bridgeList[:i], driver.bridgeList[i+1:]...)
+		}
+		delete(driver.bridgeMap, id)
+	}
+	driver.mutex.Unlock()
+
+	return nil
+}
+
 func (driver *driver) Bridge(id string) lucifer.Bridge {
 	driver.mutex.Lock()
 	bridge := driver.bridgeMap[id]

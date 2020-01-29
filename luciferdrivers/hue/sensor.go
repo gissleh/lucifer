@@ -45,7 +45,7 @@ func (sensor *sensor) State() (lucifer.SensorState, error) {
 	var daylight *bool
 	var buttonEvents []lucifer.SensorStateButtonEvent
 
-	if ghState.ButtonEvent != 0 && time.Since(*ghState.LastUpdated.Time) < time.Second*2 {
+	if ghState.ButtonEvent != 0 && !sensor.prevButtonTime.IsZero() {
 		differentTime := !sensor.prevButtonTime.IsZero() && !ghState.LastUpdated.Time.Equal(sensor.prevButtonTime)
 		if differentTime || ghState.ButtonEvent != sensor.prevButtonState {
 			prevButton := sensor.prevButtonState / 1000
@@ -82,6 +82,11 @@ func (sensor *sensor) State() (lucifer.SensorState, error) {
 		sensor.prevButtonTime = *ghState.LastUpdated.Time
 		sensor.prevButtonState = ghState.ButtonEvent
 	} else {
+		if sensor.prevButtonTime.IsZero() {
+			sensor.prevButtonTime = *ghState.LastUpdated.Time
+			sensor.prevButtonState = ghState.ButtonEvent
+		}
+
 		daylightValue := sensor.gh.State.Daylight
 		daylight = &daylightValue
 	}
@@ -101,7 +106,7 @@ func (sensor *sensor) ButtonEvents(ctx context.Context) <-chan lucifer.SensorSta
 	channel := make(chan lucifer.SensorStateButtonEvent, 16)
 
 	go func() {
-		unchangedCount := 0
+		unchangedCount := 250
 
 		defer close(channel)
 
@@ -124,7 +129,7 @@ func (sensor *sensor) ButtonEvents(ctx context.Context) <-chan lucifer.SensorSta
 			}
 
 			var waitTime time.Duration
-			if unchangedCount > 500 {
+			if unchangedCount > 50 {
 				waitTime = time.Second / 2
 			} else {
 				waitTime = time.Second / 50
