@@ -59,6 +59,10 @@ func (light *light) SetState(state lucifer.LightState) error {
 		return nil
 	}
 
+	if newState.On == false {
+		return light.gh.SetState(hue.LightState{On: false})
+	}
+
 	return light.gh.SetState(newState)
 }
 
