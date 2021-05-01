@@ -12,6 +12,7 @@ func TestColor_FromString(t *testing.T) {
 	table := map[string]struct {
 		r string
 		e bool
+		k int
 	}{
 		"#FF00FF":                {r: "ff00ff"},
 		"#FFFFFF":                {r: "ffffff"},
@@ -44,13 +45,14 @@ func TestColor_FromString(t *testing.T) {
 		"#aaccff00":              {e: true},
 		"#aabbss":                {e: true},
 		"fuck":                   {e: true},
-		"500k":                   {r: "ff3800"},
-		"1000k":                  {r: "ff3800"},
-		"6000K":                  {r: "fff3ef"},
-		"6034k":                  {r: "fff3f0"},
-		"6067k":                  {r: "fff4f1"},
-		"12000k":                 {r: "c3d1ff"},
-		"10000000k":              {r: "c3d1ff"},
+		"500k":                   {r: "ff3800", k: 1000},
+		"1000k":                  {r: "ff3800", k: 1000},
+		"2700k":                  {r: "ffa957", k: 2700},
+		"6000K":                  {r: "fff3ef", k: 6000},
+		"6034k":                  {r: "fff3f0", k: 6034},
+		"6067k":                  {r: "fff4f1", k: 6067},
+		"12000k":                 {r: "c3d1ff", k: 12000},
+		"10000000k":              {r: "c3d1ff", k: 12000},
 	}
 
 	for input, output := range table {
@@ -73,6 +75,12 @@ func TestColor_FromString(t *testing.T) {
 				t.Error(input, "mismatch")
 				t.Error(input, "expected:", output)
 				t.Error(input, "actual  :", c.Hex())
+			}
+
+			if c.K != output.k {
+				t.Error(input, "mismatch")
+				t.Error(input, "expected:", output.k)
+				t.Error(input, "actual  :", c.K)
 			}
 		})
 	}

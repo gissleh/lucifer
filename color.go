@@ -18,6 +18,7 @@ type Color struct {
 	R float64
 	G float64
 	B float64
+	K int
 }
 
 // ParseColor parses the color.
@@ -62,6 +63,7 @@ func (c *Color) SetHSV(h, s, v float64) {
 	c.R = cc.R
 	c.G = cc.G
 	c.B = cc.B
+	c.K = 0
 }
 
 func (c *Color) Hex() string {
@@ -100,6 +102,7 @@ func (c *Color) SetHex(hexStr string) error {
 	c.R = float64(data[0]) / 255
 	c.G = float64(data[1]) / 255
 	c.B = float64(data[2]) / 255
+	c.K = 0
 
 	return nil
 }
@@ -117,7 +120,7 @@ func (c *Color) SetKelvin(kelvin int) {
 		if kelvin > k.Temp {
 			continue
 		}
-		if k.Temp == kelvin {
+		if k.Temp == kelvin || i == 0 {
 			values = k.RGB
 			break
 		}
@@ -136,6 +139,7 @@ func (c *Color) SetKelvin(kelvin int) {
 	c.R = float64(values[0]) / 255
 	c.G = float64(values[1]) / 255
 	c.B = float64(values[2]) / 255
+	c.K = kelvin
 }
 
 func (c *Color) SetFromString(s string) error {
