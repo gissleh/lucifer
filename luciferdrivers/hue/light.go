@@ -40,7 +40,7 @@ func (light *light) SetState(state lucifer.LightState) error {
 	}
 	newState.Bri = brightness
 
-	if state.Color.K > 0 {
+	if state.Color.K == 0 {
 		h16 := uint16(h * (65536 / 360))
 		if h16 == 0 {
 			h16 = 1
