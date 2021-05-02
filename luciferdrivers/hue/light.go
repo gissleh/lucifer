@@ -3,7 +3,6 @@ package hue
 import (
 	hue "github.com/collinux/gohue"
 	"github.com/gissleh/lucifer"
-	"strings"
 )
 
 type light struct {
@@ -55,15 +54,27 @@ func (light *light) SetState(state lucifer.LightState) error {
 		if s8 == 0 {
 			s8 = 1
 		}
-		if s8 != ghState.Saturation {
+
+		if s8 != ghState.Saturation && ghState.ColorMode != "hs" {
 			changed = true
 		}
+
 		newState.Sat = s8
+		newState.ColorMode = "hs"
 	} else {
-		if ghState.CT != state.Color.K {
-			newState.CT = uint16(state.Color.K)
+		newCT := uint16(1000000 / state.Color.K)
+		diff := int(newCT) - ghState.CT
+
+		if diff < -75 || diff > 75 || ghState.ColorMode != "ct" {
+			newState.CT = newCT
 			changed = true
 		}
+	}
+
+	// Effects are not supported
+	if ghState.Effect != "none" {
+		newState.Effect = "none"
+		changed = true
 	}
 
 	if !changed {
@@ -80,11 +91,11 @@ func (light *light) SetState(state lucifer.LightState) error {
 func (light *light) State() (lucifer.LightState, error) {
 	ghState := light.gh.State
 
-	cm := strings.ToLower(ghState.ColorMode)
 	color := lucifer.Color{}
-	if cm == "ct" {
-		color.SetKelvin(ghState.CT)
-	} else {
+
+	if ghState.ColorMode == "ct" {
+		color.SetKelvin(1000000 / ghState.CT)
+	} else /* "hs" or "xy" */ {
 		color.SetHSV(
 			float64(ghState.Hue)/(65536/360),
 			float64(ghState.Saturation)/254,
