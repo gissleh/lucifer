@@ -60,7 +60,6 @@ func (light *light) SetState(state lucifer.LightState) error {
 		}
 
 		newState.Sat = s8
-		newState.ColorMode = "hs"
 	} else {
 		newCT := uint16(1000000 / state.Color.K)
 		diff := int(newCT) - ghState.CT
